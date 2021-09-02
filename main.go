@@ -21,6 +21,7 @@ import (
 func main()  {
 	//define application
 	api := newApp()
+
 	//startup service, request root url, like http://127.0.0.1:9537
 	err := api.Run(iris.Addr(fmt.Sprintf("%s:%d", config.Setting.App.BindAddress, config.Setting.App.Port)))
 	if err != nil {
