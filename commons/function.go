@@ -1,8 +1,10 @@
 package commons
 
 import (
+	"fmt"
 	"iris-demo/config"
 	"iris-demo/slog"
+	"strconv"
 	"time"
 )
 
@@ -36,4 +38,82 @@ func GetCurrentMonthsLastDay() string {
 	endTime := startTime.AddDate(0, 1, 0).Add(-time.Second)
 	lastDay := GetDay(&endTime)
 	return lastDay
+}
+
+func StringToTime(timeString string) time.Time {
+	t, err := time.ParseInLocation(TIME_LAYOUT, timeString, SetLocation())
+	if err != nil {
+		slog.Error(err.Error())
+	}
+	return t
+}
+
+// if float64 number's decimal bit more than 0, then ensure int part can increase 1
+func IncreaseFiveToLastIntBit(number float64) float64 {
+	if number <= 0 {
+		return 0
+	}
+	res := number
+	// float64 format to no decimal string
+	noDecimalStr := fmt.Sprintf("%.f", number * 100)
+	fmt.Println(noDecimalStr)
+	// get the last number
+	lastNumber,_ := strconv.Atoi(noDecimalStr[len(noDecimalStr) - 1:])
+	flag := false
+	lastSecondNumber := 0
+	// get the last second number
+	if len(noDecimalStr) >= 2 {
+		lastSecondNumber,_ = strconv.Atoi(noDecimalStr[len(noDecimalStr) - 2:len(noDecimalStr) - 1])
+		if lastSecondNumber > 0 && lastSecondNumber <= 5 {
+			flag = true
+		}
+	}
+	if lastSecondNumber == 0 && lastNumber > 0 {
+		flag = true
+	}
+	if flag {
+		floatNumber,_ := strconv.ParseFloat(noDecimalStr,64)
+		res = (floatNumber + float64(50)) / float64(100)
+	}
+
+	return res
+}
+
+// if float64 number's decimal bit more than 0, then ensure int part can increase 1
+func IncreaseFiveToLastIntBitForFourDecimal(number float64) float64 {
+	if number == 0 {
+		return 0
+	}
+	res := number
+	// float64 format to no decimal string
+	noDecimalStr := fmt.Sprintf("%.f", number * 10000)
+	fmt.Println(noDecimalStr)
+	// get the last number
+	lastNumber,_ := strconv.Atoi(noDecimalStr[len(noDecimalStr) - 1:])
+	flag := false
+	var lastSecondNumber,lastThirdNumber,lastFourNumber int
+	// get the last four number
+	if len(noDecimalStr) >= 4 {
+		lastFourNumber,_ = strconv.Atoi(noDecimalStr[len(noDecimalStr) - 4:len(noDecimalStr) - 3])
+		if lastFourNumber > 0 && lastFourNumber <= 5 {
+			flag = true
+		}
+	}
+	// get the last third number
+	if len(noDecimalStr) >= 3 {
+		lastThirdNumber,_ = strconv.Atoi(noDecimalStr[len(noDecimalStr) - 3:len(noDecimalStr) - 2])
+	}
+	// get the last second number
+	if len(noDecimalStr) >= 2 {
+		lastSecondNumber,_ = strconv.Atoi(noDecimalStr[len(noDecimalStr) - 2:len(noDecimalStr) - 1])
+	}
+	if lastFourNumber == 0 && (lastNumber > 0 || lastSecondNumber > 0 || lastThirdNumber > 0) {
+		flag = true
+	}
+	if flag {
+		floatNumber,_ := strconv.ParseFloat(noDecimalStr,64)
+		res = (floatNumber + float64(5000)) / float64(10000)
+	}
+
+	return res
 }
