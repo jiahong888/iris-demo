@@ -117,3 +117,31 @@ func IncreaseFiveToLastIntBitForFourDecimal(number float64) float64 {
 
 	return res
 }
+
+// append method, will copy a new slice2 params first, so will not change slice1 param's value.
+func AppendSlice(slice1 []int, number int) []int {
+	slice2 := append(slice1, number)
+	return slice2
+}
+
+func ChangeSlice(slice1 []int, number int) []int {
+	slice1[0] = number
+	fmt.Printf("%p \n", &slice1)
+	return slice1
+}
+
+func ChangePointer(pointer1 *struct{
+	Number int
+}, number int) {
+	pointer1.Number = number
+}
+
+func TestSlice(sl []string){
+	fmt.Printf("%v, %p, %p\n",sl, &sl,sl)   // [a b c], 0xc0004fc220, 0xc0007242d0
+	sl[0] = "aa"
+	fmt.Printf("%v, %p, %p\n",sl, &sl,sl)   // [aa b c], 0xc0004fc220, 0xc0007242d0
+	sl = append(sl, "d")
+	fmt.Printf("%v, %p, %p\n",sl, &sl,sl)   // [aa b c d], 0xc0004fc220, 0xc00041a180
+	s2 := append(sl, "d")
+	fmt.Printf("%v, %p, %p\n",s2, &s2,s2)   // [aa b c d d], 0xc0004fc340, 0xc00041a180
+}
