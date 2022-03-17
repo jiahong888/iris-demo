@@ -42,7 +42,7 @@ func TestBufferedChan(t *testing.T)  {
 
 	defer close(counter.accept)
 
-	// get map
+	// get channel, get map
 	for i:=0; i<n; i++ {
 		wg.Add(1)
 		go func(i int) {
@@ -66,7 +66,7 @@ func TestBufferedChan(t *testing.T)  {
 		}(i)
 	}
 
-	// write map
+	// write channel
 	for i:=0; i<n; i++ {
 		fmt.Println("write map i:", i)
 		s := strconv.Itoa(i)
@@ -181,4 +181,25 @@ func TestNonBufferedChan(t *testing.T)  {
 
 	return
 
+}
+
+func TestNilChan(t *testing.T)  {
+	var done <-chan struct{}
+	closeChan := make(chan struct{})
+	done = closeChan
+	close(closeChan)
+	for {
+		select {
+		case closeData := <-done:
+			fmt.Println("receive chan", closeData)
+			return
+		}
+	}
+}
+
+func TestMap(t *testing.T)  {
+	m := make(map[string]string)
+	if _,ok := m["name"]; !ok {
+		fmt.Println("this map key didnt exist")
+	}
 }
