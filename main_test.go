@@ -13,8 +13,14 @@ import (
 func TestStart(t *testing.T)  {
 	newApp()
 	t.Run("BootStart", unit_test.BootStart)
+	t.Run("TimeoutContextTest", unit_test.TestTimeoutContext)
+	t.Run("CancelContextTest", unit_test.TestCancelContext)
+	t.Run("TestCancelContextV2", unit_test.TestCancelContextV2)
+	t.Run("TestChannel", unit_test.TestChannel)
+	t.Run("TestOrder", unit_test.TestOrder)
 }
 
+// buffered channel, can first write, then get. or first get, then write.
 func TestBufferedChan(t *testing.T)  {
 	defer func() {
 		fmt.Println("the number of goroutines: ", runtime.NumGoroutine())
@@ -42,11 +48,21 @@ func TestBufferedChan(t *testing.T)  {
 
 	defer close(counter.accept)
 
+	// write channel
+	for i:=0; i<n; i++ {
+		fmt.Println("write channel i:", i)
+		s := strconv.Itoa(i)
+		counter.accept <- MapData{
+			key:   "jiahong"+s,
+			value: "v"+s,
+		}
+	}
+
 	// get channel, get map
 	for i:=0; i<n; i++ {
 		wg.Add(1)
 		go func(i int) {
-			fmt.Println("get map i:", i)
+			fmt.Println("get channel i:", i)
 			counter.Lock()
 			defer counter.Unlock()
 			defer wg.Done()
@@ -66,15 +82,7 @@ func TestBufferedChan(t *testing.T)  {
 		}(i)
 	}
 
-	// write channel
-	for i:=0; i<n; i++ {
-		fmt.Println("write map i:", i)
-		s := strconv.Itoa(i)
-		counter.accept <- MapData{
-			key:   "jiahong"+s,
-			value: "v"+s,
-		}
-	}
+
 
 	//for i:=0; i<n; i++ {
 	//	wg.Add(1)
@@ -99,6 +107,7 @@ func TestBufferedChan(t *testing.T)  {
 
 }
 
+// non-buffered channel, only can first get, then write.
 func TestNonBufferedChan(t *testing.T)  {
 	defer func() {
 		fmt.Println("the number of goroutines: ", runtime.NumGoroutine())
