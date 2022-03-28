@@ -97,7 +97,7 @@ func TestOrder(t *testing.T)  {
 		str := strconv.Itoa(i)
 		params := OrderInfo{
 			Id: uint64(i),
-			Sn: "JH20220318171" + str,
+			Sn: "JH20220318172" + str,
 		}
 		go SendOrder(ch, params)
 		HandleOrder(ch)
